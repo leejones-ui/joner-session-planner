@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -12,9 +12,36 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://joner-session-planner.vercel.app";
+
+export const viewport: Viewport = {
+  themeColor: "#09090b",
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
-  title: "Joner Session Planner",
-  description: "AI football session planner by Joner Football. Prompt a session, get a full plan with diagrams.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Joner Session Planner",
+    template: "%s, Joner Session Planner",
+  },
+  description: "AI session planning for football coaches. Prompt, generate, diagram, share.",
+  applicationName: "Joner Session Planner",
+  authors: [{ name: "Joner Football", url: "https://jonerfootball.com" }],
+  creator: "Joner Football",
+  openGraph: {
+    type: "website",
+    siteName: "Joner Session Planner",
+    title: "Joner Session Planner",
+    description: "AI session planning for football coaches. Built by Joner Football.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Joner Session Planner",
+    description: "AI session planning for football coaches. Built by Joner Football.",
+    creator: "@jonerfootball",
+  },
 };
 
 export default function RootLayout({

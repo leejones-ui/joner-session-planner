@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import type { Block } from "@/lib/schema/session";
-import { DiagramSvg } from "@/components/pitch/DiagramSvg";
+import { DiagramZoomable } from "@/components/pitch/DiagramZoomable";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
@@ -53,7 +53,7 @@ export function BlockCard({ block, diagramLoading, onEdit }: Props) {
             </div>
           </div>
         ) : (
-          <DiagramSvg diagram={block.diagram} className="w-full h-auto block" ariaLabel={block.name} />
+          <DiagramZoomable diagram={block.diagram} title={block.name} />
         )}
       </div>
 

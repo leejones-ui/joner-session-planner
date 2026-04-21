@@ -21,3 +21,29 @@ body {
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+
+/* Print layout. Hides all app chrome, lets SessionPrintable own the page. */
+@media print {
+  :root {
+    --background: #ffffff;
+    --foreground: #111111;
+  }
+  html, body {
+    background: #ffffff !important;
+    color: #111111 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  @page {
+    margin: 12mm;
+    size: A4 portrait;
+  }
+  a[href] {
+    text-decoration: none;
+    color: inherit;
+  }
+  .print\:block {
+    display: block !important;
+  }
+}

@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import { getAnthropic, CLAUDE_MODEL } from "@/lib/anthropic";
 import { buildSystemPrompt } from "@/lib/prompts/load";
 import { zodToToolSchema } from "@/lib/zod-tool";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import {
   GenerateSessionInput,
   SessionDraft,
@@ -15,6 +16,16 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  const rl = checkRateLimit(ip);
+  if (!rl.ok) {
+    console.log(`[rate-limit] blocked ip=${ip}, retryAfter=${rl.retryAfterSeconds}s`);
+    return NextResponse.json(
+      { error: "You've hit tonight's limit, try again in an hour." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSeconds) } }
+    );
+  }
+
   let body: unknown;
   try {
     body = await request.json();
