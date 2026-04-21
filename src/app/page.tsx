@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
@@ -33,6 +33,29 @@ export default function Home() {
   const [diagramLoading, setDiagramLoading] = useState<Set<string>>(new Set());
 
   const [editingBlock, setEditingBlock] = useState<Block | null>(null);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const savedIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!session) return;
+    if (diagramLoading.size > 0) return;
+    if (savedIdRef.current === session.id) return;
+    savedIdRef.current = session.id;
+    (async () => {
+      try {
+        const r = await fetch("/api/save-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(session),
+        });
+        if (r.ok) {
+          setShareUrl(`/s/${session.id}`);
+        }
+      } catch {
+        // ignore, share is best-effort
+      }
+    })();
+  }, [session, diagramLoading]);
 
   async function generate() {
     if (prompt.trim().length < 3) {
@@ -42,6 +65,8 @@ export default function Home() {
     setError(null);
     setLoading(true);
     setSession(null);
+    setShareUrl(null);
+    savedIdRef.current = null;
     setDiagramLoading(new Set());
 
     try {
@@ -189,6 +214,7 @@ export default function Home() {
               session={session}
               diagramLoading={diagramLoading}
               onEditBlock={(b) => setEditingBlock(b)}
+              shareUrl={shareUrl ?? undefined}
             />
           </section>
         )}
