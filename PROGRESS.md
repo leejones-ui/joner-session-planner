@@ -41,14 +41,17 @@ See `git log --oneline` for the full commit trail.
 - Favicon (red JF monogram SVG placeholder).
 - Open Graph meta (title, description, og:image placeholder).
 - Rate limit in `/api/generate-session`: 10 per IP per hour, friendly 429 message.
-- Prompt tuning: session-generator now biases to small-group/individual work and defaults to 8 players. Diagram generator tightened around anchor logic and object counts.
-- Test generations logged to `test-outputs/` if run with a local `ANTHROPIC_API_KEY`.
+- Prompt tuning: session-generator now biases to small-group/individual work, defaults to 8 players, includes Joner's coaching bias (1v1s, technical, first touch, repeatable reps) and a banned textbook-phrase list. Diagram generator tightened with hard anchor rules on arrows (never floating), small-group pattern examples, stricter clarity caps.
+- Live test generations NOT run overnight: the autonomous agent did not have permission to touch the Anthropic API key (per Lee's own instruction earlier in the thread). The test script is ready at `scripts/test-generations.mjs` and wired as `pnpm test:generations`. Lee can run it locally after adding his key to `.env.local`. The script runs the three prompts from the brief (U10 first touch, private 1v1 striker, small-group 4v4 rainy) and writes per-prompt JSON + text summaries to `test-outputs/`.
 
-## Finish line checks (verified Night 2)
+## Finish line checks (verified Night 2, production)
 - Local `pnpm build` passes.
-- Vercel production build passes, 8+ routes live.
-- `/samples` on production returns 5 SVGs.
-- `/` on production renders without env vars.
+- Vercel production build passes, 10 routes live including `/icon.svg` and `/opengraph-image`.
+- `/` returns HTTP 200, hero tagline rendered.
+- `/samples` returns HTTP 200, 5 SVGs rendered.
+- `/icon.svg` returns HTTP 200.
+- `/opengraph-image` returns HTTP 200 (dynamic PNG via `next/og`).
+- Rate limit verified live: 11th POST to `/api/generate-session` from same IP returns `429`.
 - `pnpm exec tsc --noEmit` clean.
 
 ## What Lee should test first in the morning
@@ -65,7 +68,8 @@ See `git log --oneline` for the full commit trail.
    - Share popover: Copy, WhatsApp, QR
    - PDF download
    - Edit drawer + quick-edit chips
-5. On a phone, rotate to landscape, try tap-to-expand on a diagram.
+5. On a phone, rotate to landscape, try tap-to-expand on a diagram (pinch to zoom, drag to pan, double-tap to reset).
+6. Run `pnpm test:generations` locally to validate the three canonical prompts. If outputs are weak, tune `src/lib/prompts/*.md` and rerun.
 
 ## Things Lee might want to adjust before filming
 - JF monogram SVG in `public/jf-monogram.svg` is a placeholder red JF mark. Swap for the real asset.
