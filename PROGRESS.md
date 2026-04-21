@@ -41,7 +41,13 @@ See `git log --oneline` for the full commit trail.
 - Favicon (red JF monogram SVG placeholder).
 - Open Graph meta (title, description, og:image placeholder).
 - Rate limit in `/api/generate-session`: 10 per IP per hour, friendly 429 message.
-- Prompt tuning: session-generator now biases to small-group/individual work, defaults to 8 players, includes Joner's coaching bias (1v1s, technical, first touch, repeatable reps) and a banned textbook-phrase list. Diagram generator tightened with hard anchor rules on arrows (never floating), small-group pattern examples, stricter clarity caps.
+- Prompt tuning: session-generator now biases to small-group/individual work, defaults to 8 players, includes Joner's coaching bias (1v1s, technical, first touch, repeatable reps) and a banned textbook-phrase list. Diagram generator tightened with hard anchor rules on arrows (never floating), WRONG/RIGHT examples, small-group pattern examples, stricter clarity caps.
+- Server-side dash sanitizer in `src/lib/sanitize.ts`: runs on every AI response to swap any stray em dashes for commas and en dashes for hyphens. Belt-and-braces against prompt drift.
+- `Cmd/Ctrl+Enter` from the prompt box submits generate.
+- Auto-scroll: generated session scrolls into view after creation.
+- 429 responses from the rate limiter are parsed into a friendly "try again in X minutes" banner using the `Retry-After` header.
+- Share popover handles the "Supabase not configured" case gracefully with an explainer message instead of infinite "Saving...".
+- Input bounds on `GenerateSessionInput` (prompt <= 2000 chars, duration <= 180, playerCount <= 40, etc.) to prevent pathological requests.
 - Live test generations NOT run overnight: the autonomous agent did not have permission to touch the Anthropic API key (per Lee's own instruction earlier in the thread). The test script is ready at `scripts/test-generations.mjs` and wired as `pnpm test:generations`. Lee can run it locally after adding his key to `.env.local`. The script runs the three prompts from the brief (U10 first touch, private 1v1 striker, small-group 4v4 rainy) and writes per-prompt JSON + text summaries to `test-outputs/`.
 
 ## Finish line checks (verified Night 2, production)
