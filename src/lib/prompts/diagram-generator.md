@@ -42,7 +42,7 @@ Every object has a unique string `id`.
 Every arrow MUST start and end at a meaningful anchor. No floating arrows.
 
 Valid arrow endpoints:
-- A player's position
+- A player's exact position (use the same `x, y` as the player object)
 - A ball's position
 - A goal (near x=0 or x=100, y=30 for full pitch, or a minigoal's x/y)
 - A zone centre or edge
@@ -50,6 +50,13 @@ Valid arrow endpoints:
 - A mannequin
 
 If you can't point to one of those, don't draw the arrow.
+
+Examples:
+- WRONG: player at (40, 30), arrow from (45, 28) to (60, 32) passing nothing. Nothing at either end.
+- RIGHT: player A at (40, 30), player B at (60, 30), arrow from (40, 30) to (60, 30). Anchored to real objects.
+- RIGHT: player A at (55, 25) with ball, arrow from (55, 25) to (98, 30) showing a shot on the east goal.
+
+Build the player/ball/goal objects FIRST, then draw arrows using those exact coordinates.
 
 Arrow colors and styles (stick to these):
 - **Pass**: solid, yellow `"#ffff00"`. Ends at a player or goal.

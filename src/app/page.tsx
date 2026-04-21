@@ -40,6 +40,7 @@ export default function Home() {
   const savedIdRef = useRef<string | null>(null);
   const inflightSaveRef = useRef<Promise<string | undefined> | null>(null);
   const sessionRef = useRef<Session | null>(null);
+  const sessionSectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     sessionRef.current = session;
@@ -99,11 +100,20 @@ export default function Home() {
       });
       if (!resp.ok) {
         const data = await resp.json().catch(() => ({}));
+        if (resp.status === 429) {
+          const retryAfter = Number(resp.headers.get("retry-after") ?? 0);
+          const mins = retryAfter ? Math.max(1, Math.ceil(retryAfter / 60)) : null;
+          throw new Error(mins ? `You've hit tonight's limit. Try again in ${mins} minutes.` : "You've hit tonight's limit, try again in an hour.");
+        }
         throw new Error(data.error ?? `Request failed (${resp.status})`);
       }
       const s: Session = await resp.json();
       setSession(s);
       setDiagramLoading(new Set(s.blocks.map((b) => b.id)));
+      // Let React paint, then bring the session into view.
+      requestAnimationFrame(() => {
+        sessionSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
 
       s.blocks.forEach(async (block) => {
         try {
@@ -241,7 +251,7 @@ export default function Home() {
         )}
 
         {session && (
-          <section className="mt-10">
+          <section ref={sessionSectionRef} className="mt-10 scroll-mt-4">
             <SessionView
               session={session}
               diagramLoading={diagramLoading}
