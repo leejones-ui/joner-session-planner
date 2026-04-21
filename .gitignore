@@ -32,6 +32,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.local.example
+
+# test outputs from local prompt tuning runs
+/test-outputs/*.json
 
 # vercel
 .vercel
