@@ -42,11 +42,11 @@ export type SessionDraftBlock = z.infer<typeof SessionDraftBlock>;
 export type SessionDraft = z.infer<typeof SessionDraft>;
 
 export const GenerateSessionInput = z.object({
-  prompt: z.string().min(3),
-  ageGroup: z.string().optional(),
-  playerCount: z.number().int().positive().optional(),
-  duration: z.number().int().positive().optional(),
-  focus: z.string().optional(),
+  prompt: z.string().min(3).max(2000),
+  ageGroup: z.string().max(20).optional(),
+  playerCount: z.number().int().positive().max(40).optional(),
+  duration: z.number().int().positive().max(180).optional(),
+  focus: z.string().max(100).optional(),
 });
 export type GenerateSessionInput = z.infer<typeof GenerateSessionInput>;
 

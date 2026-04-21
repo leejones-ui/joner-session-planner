@@ -15,6 +15,7 @@ export function SharePopover({ shareUrl, title, onRequestSave }: Props) {
   const [copied, setCopied] = useState(false);
   const [resolvedUrl, setResolvedUrl] = useState<string | undefined>(shareUrl);
   const [saving, setSaving] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -51,7 +52,12 @@ export function SharePopover({ shareUrl, title, onRequestSave }: Props) {
     setSaving(true);
     try {
       const u = await onRequestSave();
-      if (u) setResolvedUrl(u);
+      if (u) {
+        setResolvedUrl(u);
+        setSaveFailed(false);
+      } else {
+        setSaveFailed(true);
+      }
       return u;
     } finally {
       setSaving(false);
@@ -93,31 +99,39 @@ export function SharePopover({ shareUrl, title, onRequestSave }: Props) {
         {saving ? "Preparing" : "Share"}
       </Button>
 
-      {open && (resolvedUrl || saving) && (
+      {open && (
         <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-zinc-900 border border-zinc-800 shadow-2xl overflow-hidden z-40" role="menu">
           <div className="p-4 space-y-3">
             <div className="space-y-1">
               <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Share session</p>
               <p className="text-sm text-zinc-300 truncate" title={resolvedUrl ? absoluteUrl(resolvedUrl) : ""}>
-                {resolvedUrl ? absoluteUrl(resolvedUrl) : "Saving..."}
+                {resolvedUrl ? absoluteUrl(resolvedUrl) : saveFailed ? "Sharing not configured" : "Saving..."}
               </p>
             </div>
-            <div className="flex gap-2">
-              <Button variant="secondary" size="sm" className="flex-1" onClick={copyLink} disabled={!resolvedUrl}>
-                {copied ? "Copied" : "Copy link"}
-              </Button>
-              <Button variant="secondary" size="sm" className="flex-1" onClick={openWhatsApp} disabled={!resolvedUrl}>
-                WhatsApp
-              </Button>
-            </div>
-            <div className="flex items-center justify-center bg-white rounded-xl p-3">
-              {qrDataUrl ? (
-                <img src={qrDataUrl} alt="QR code for session link" className="w-48 h-48" />
-              ) : (
-                <div className="w-48 h-48 grid place-items-center text-zinc-400 text-sm">Generating QR</div>
-              )}
-            </div>
-            <p className="text-xs text-zinc-500 text-center">Scan from a phone to open the session.</p>
+            {saveFailed && !resolvedUrl ? (
+              <p className="text-xs text-zinc-500">
+                Set the Supabase env vars on Vercel and redeploy to enable share links.
+              </p>
+            ) : (
+              <>
+                <div className="flex gap-2">
+                  <Button variant="secondary" size="sm" className="flex-1" onClick={copyLink} disabled={!resolvedUrl}>
+                    {copied ? "Copied" : "Copy link"}
+                  </Button>
+                  <Button variant="secondary" size="sm" className="flex-1" onClick={openWhatsApp} disabled={!resolvedUrl}>
+                    WhatsApp
+                  </Button>
+                </div>
+                <div className="flex items-center justify-center bg-white rounded-xl p-3">
+                  {qrDataUrl ? (
+                    <img src={qrDataUrl} alt="QR code for session link" className="w-48 h-48" />
+                  ) : (
+                    <div className="w-48 h-48 grid place-items-center text-zinc-400 text-sm">Generating QR</div>
+                  )}
+                </div>
+                <p className="text-xs text-zinc-500 text-center">Scan from a phone to open the session.</p>
+              </>
+            )}
           </div>
         </div>
       )}
