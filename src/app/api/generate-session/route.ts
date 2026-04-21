@@ -4,6 +4,7 @@ import { getAnthropic, CLAUDE_MODEL } from "@/lib/anthropic";
 import { buildSystemPrompt } from "@/lib/prompts/load";
 import { zodToToolSchema } from "@/lib/zod-tool";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { stripDashes } from "@/lib/sanitize";
 import {
   GenerateSessionInput,
   SessionDraft,
@@ -84,7 +85,7 @@ export async function POST(request: Request) {
   if (!draftParsed.success) {
     return NextResponse.json({ error: "Model output failed schema validation", issues: draftParsed.error.issues }, { status: 502 });
   }
-  const draft = draftParsed.data;
+  const draft = stripDashes(draftParsed.data);
 
   const now = new Date().toISOString();
   const sessionId = crypto.randomUUID();

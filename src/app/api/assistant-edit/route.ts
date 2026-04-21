@@ -3,6 +3,7 @@ import { getAnthropic, CLAUDE_MODEL } from "@/lib/anthropic";
 import { buildSystemPrompt } from "@/lib/prompts/load";
 import { zodToToolSchema } from "@/lib/zod-tool";
 import { AssistantEditInput, Block } from "@/lib/schema/session";
+import { stripDashes } from "@/lib/sanitize";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -77,6 +78,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Model output failed schema validation", issues: blockParsed.error.issues }, { status: 502 });
   }
 
-  const merged: Block = { ...blockParsed.data, id: block.id, type: block.type };
+  const merged: Block = stripDashes({ ...blockParsed.data, id: block.id, type: block.type });
   return NextResponse.json({ block: merged });
 }

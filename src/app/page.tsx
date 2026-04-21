@@ -191,6 +191,12 @@ export default function Home() {
           <Textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={(e) => {
+              if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && !loading) {
+                e.preventDefault();
+                generate();
+              }
+            }}
             placeholder="Example: Finishing under pressure for U12s, 8 players, 45 minutes. Focus on first touch into a shot."
             rows={4}
             aria-label="Session prompt"

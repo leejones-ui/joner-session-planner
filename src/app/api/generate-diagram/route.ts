@@ -4,6 +4,7 @@ import { buildSystemPrompt } from "@/lib/prompts/load";
 import { zodToToolSchema } from "@/lib/zod-tool";
 import { GenerateDiagramInput } from "@/lib/schema/session";
 import { Diagram, EMPTY_DIAGRAM } from "@/lib/schema/diagram";
+import { stripDashes } from "@/lib/sanitize";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -75,5 +76,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ diagram: EMPTY_DIAGRAM, warning: "Model output failed schema validation", issues: diagramParsed.error.issues });
   }
 
-  return NextResponse.json({ diagram: diagramParsed.data });
+  return NextResponse.json({ diagram: stripDashes(diagramParsed.data) });
 }
