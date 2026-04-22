@@ -91,7 +91,7 @@ export const DiagramLabel = z.object({
   size: z.enum(["sm", "md", "lg"]).default("md"),
 });
 
-export const Diagram = z.object({
+export const DiagramFrame = z.object({
   pitch: Pitch,
   zones: z.array(Zone).default([]),
   cones: z.array(Cone).default([]),
@@ -104,6 +104,23 @@ export const Diagram = z.object({
   labels: z.array(DiagramLabel).default([]),
 });
 
+export const DiagramMeta = z.object({
+  drillId: z.string().optional(),
+  drillName: z.string().optional(),
+  family: z.enum(["technical", "conditioning", "box-game", "small-sided", "goal-facing"]).optional(),
+  camera: z.enum(["perspective-tilt", "top-down", "top-down-zoomed", "goal-perspective"]).optional(),
+  playerCount: z.number().optional(),
+});
+
+export const Diagram = DiagramFrame.extend({
+  meta: DiagramMeta.optional(),
+  phases: z.object({
+    setup: DiagramFrame,
+    inAction: DiagramFrame,
+    progression: DiagramFrame,
+  }).optional(),
+});
+
 export type Pitch = z.infer<typeof Pitch>;
 export type Zone = z.infer<typeof Zone>;
 export type Cone = z.infer<typeof Cone>;
@@ -114,6 +131,8 @@ export type Mannequin = z.infer<typeof Mannequin>;
 export type MiniGoal = z.infer<typeof MiniGoal>;
 export type Equipment = z.infer<typeof Equipment>;
 export type DiagramLabel = z.infer<typeof DiagramLabel>;
+export type DiagramFrame = z.infer<typeof DiagramFrame>;
+export type DiagramMeta = z.infer<typeof DiagramMeta>;
 export type Diagram = z.infer<typeof Diagram>;
 
 export const EMPTY_DIAGRAM: Diagram = {

@@ -1,5 +1,10 @@
 # Progress log
 
+## 2026-04-22
+- Added Joner Visual drill engine rules to the diagram generation prompt
+- Extended diagram schema so generated JSON can now carry Joner metadata plus phased diagrams: setup, inAction, progression
+- Added first locked reference example at `references/01-l-shape-technical.json`
+
 ## LIVE URL
 https://joner-session-planner.vercel.app
 
